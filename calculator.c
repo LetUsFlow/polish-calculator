@@ -5,8 +5,8 @@
 #include <string.h>
 #include "stack.h"
 
-void malformed_exit(void) {
-    printf("Malformed input! Quitting.\n");
+void malformed_exit(char *err) {
+    fprintf(stderr, "%s\nMalformed input! Quitting.\n", err);
     exit(EXIT_FAILURE);
 }
 
@@ -14,7 +14,7 @@ void execute_math_operation(stack_t *stack, char operation) {
     double b = stack_pop(stack);
     double a = stack_pop(stack);
     if (isnan(a) || isnan(b)) {
-        malformed_exit();
+        malformed_exit("At least one input number is missing!");
     }
     double res;
     switch (operation) {
@@ -34,7 +34,7 @@ void execute_math_operation(stack_t *stack, char operation) {
         res = fmod(a, b);
         break;
     default:
-        malformed_exit();
+        malformed_exit("Could not find correct math operation!");
         break;
     }
     stack_push(stack, res);
@@ -76,6 +76,9 @@ int main(int argc, char *argv[]) {
             size_t len = strlen(token); // remove newline char
             if (len > 0 && token[len - 1] == '\n') {
                 token[len - 1] = '\0';
+                if (len-1 > 0 && token[len - 2] == '\r') {
+                    token[len - 2] = '\0';
+                }
             }
 
             double value = strtod(token, &endptr);
@@ -84,7 +87,7 @@ int main(int argc, char *argv[]) {
             if (*endptr != '\0') {
                 if (value != 0 || endptr != token || strlen(endptr) > 1) {
                     //printf("strlen(endptr): %ld, >%s<\n", strlen(endptr), endptr);
-                    malformed_exit();
+                    malformed_exit("Could not parse number or math operation!");
                 }
 
                 execute_math_operation(&stack, token[0]);
@@ -100,7 +103,7 @@ int main(int argc, char *argv[]) {
         //print_stack(&stack);
         double res = stack_pop(&stack);
         if (!isnan(stack_pop(&stack))) {
-            malformed_exit();
+            malformed_exit("There is more than one output number!");
         }
         fprintf(tmp_fp, "%.15g\n", res);
     }
