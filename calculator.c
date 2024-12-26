@@ -51,33 +51,32 @@ int main(int argc, char *argv[]) {
     char *line = NULL;
     char *input_file = argv[1];
     size_t len = 0;
-    ssize_t nread;
 
     in_fp = fopen(input_file, "r");
     if (in_fp == NULL) {
-        perror("could not read input file");
+        perror("Could not read input file");
         return EXIT_FAILURE;
     }
 
     tmp_fp = tmpfile();
     if (tmp_fp == NULL) {
-        perror("could not open tmpfile");
+        perror("Could not open tmpfile");
         return EXIT_FAILURE;
     }
 
-    while ((nread = getline(&line, &len, in_fp)) != -1) {
+    while (getline(&line, &len, in_fp) != -1) {
 
         stack_t stack = {NULL};
-
         char *token = strtok(line, " ");
+
         while (token != NULL) {
             char *endptr;
 
-            size_t len = strlen(token); // remove newline char
+            size_t len = strlen(token);
             if (len > 0 && token[len - 1] == '\n') {
-                token[len - 1] = '\0';
-                if (len-1 > 0 && token[len - 2] == '\r') {
-                    token[len - 2] = '\0';
+                token[len - 1] = '\0'; // remove newline char
+                if (len > 1 && token[len - 2] == '\r') {
+                    token[len - 2] = '\0'; // Remove carriage return
                 }
             }
 
@@ -113,7 +112,7 @@ int main(int argc, char *argv[]) {
 
     in_fp = fopen(input_file, "w");
     if (in_fp == NULL) {
-        perror("could not open output file");
+        perror("Could not open output file");
         return EXIT_FAILURE;
     }
 
