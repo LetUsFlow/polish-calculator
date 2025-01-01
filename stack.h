@@ -7,7 +7,7 @@ struct llnode {
 };
 
 typedef struct {
-    struct llnode *head;
+    struct llnode *top;
 } stack_t;
 
 void stack_push(stack_t *stack, double value);

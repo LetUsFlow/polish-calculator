@@ -6,14 +6,14 @@
 void stack_push(stack_t *stack, double value) {
     struct llnode *newhead = malloc(sizeof(struct llnode));
     newhead->value = value;
-    newhead->next = stack->head;
-    stack->head = newhead;
+    newhead->next = stack->top;
+    stack->top = newhead;
 }
 
 double stack_pop(stack_t *stack) {
-    struct llnode *oldhead = stack->head;
+    struct llnode *oldhead = stack->top;
     if (oldhead != NULL) {
-        stack->head = oldhead->next;
+        stack->top = oldhead->next;
         double value = oldhead->value;
         free(oldhead);
         return value;
@@ -23,15 +23,12 @@ double stack_pop(stack_t *stack) {
 
 void print_stack(stack_t *stack) {
     printf("stack: [");
-    struct llnode *node = stack->head;
-    int first = 1;
+    struct llnode *node = stack->top;
     while (node != NULL) {
-        if (!first) {
-            printf(", ");
-        } else {
-            first = 0;
-        }
         printf("%f", node->value);
+        if (node->next != NULL) {
+            printf(", ");
+        }
         node = node->next;
     }
     printf("]\n");
