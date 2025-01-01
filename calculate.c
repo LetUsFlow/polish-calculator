@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
     while (getline(&line, &len, in_fp) != -1) {
 
-        stack_t stack = {NULL};
+        stack_t *stack = &(stack_t){NULL};
         char *token = strtok(line, " ");
 
         while (token != NULL) {
@@ -89,19 +89,19 @@ int main(int argc, char *argv[]) {
                     malformed_exit("Could not parse number or math operation!");
                 }
 
-                execute_math_operation(&stack, token[0]);
+                execute_math_operation(stack, token[0]);
 
             } else {
-                stack_push(&stack, value);
+                stack_push(stack, value);
             }
 
             token = strtok(NULL, " ");
         }
 
         //printf("result ");
-        //print_stack(&stack);
-        double res = stack_pop(&stack);
-        if (!isnan(stack_pop(&stack))) {
+        //print_stack(stack);
+        double res = stack_pop(stack);
+        if (!isnan(stack_pop(stack))) {
             malformed_exit("There is more than one output number!");
         }
         fprintf(tmp_fp, "%.15g\n", res);
